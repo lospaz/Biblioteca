@@ -2,12 +2,21 @@
 
 namespace Modules\Library\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Facades\Route;
+use Modules\Library\Models\Book;
+use Modules\Library\Policies\LibraryPolicy;
 
 class LibraryServiceProvider extends ServiceProvider
 {
+
+    protected $policies = [
+        Book::class => LibraryPolicy::class,
+    ];
+
+
     /**
      * Bootstrap services.
      *
@@ -22,6 +31,8 @@ class LibraryServiceProvider extends ServiceProvider
         $this->registerApiRoutes();
         $this->loadMigrationsFrom(__DIR__  . '/../Database/Migrations');
         $this->registerFactories();
+
+        Gate::resource('library', 'Modules\Library\Policies\LibraryPolicy');
     }
 
     /**

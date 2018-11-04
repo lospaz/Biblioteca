@@ -41,7 +41,9 @@ class LibraryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        $this->middleware('library.create');
+        if(!Auth::user()->can('library.create')){
+            abort(403);
+        }
         return view('Library::create',[
             'categories' => Category::all()
         ]);
@@ -54,7 +56,9 @@ class LibraryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(CreateBook $request) {
-        $this->middleware('library.create');
+        if(!Auth::user()->can('library.create')){
+            abort(403);
+        }
 
         $book = new Book;
         $book->user_id = Auth::id();
@@ -88,7 +92,10 @@ class LibraryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        $this->middleware('library.edit');
+        if(!Auth::user()->can('library.update')){
+            abort(403);
+        }
+
         $book = Book::findOrFail($id);
 
         return view('Library::edit', [
@@ -105,7 +112,9 @@ class LibraryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        $this->middleware('library.edit');
+        if(!Auth::user()->can('library.update')){
+            abort(403);
+        }
         $book = Book::findOrFail($id);
         $book->fill($request->except('_token'));
         $category = self::checkCategory($request);
@@ -125,7 +134,10 @@ class LibraryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        $this->middleware('library.delete');
+        if(!Auth::user()->can('library.delete')){
+            abort(403);
+        }
+
         $book = Book::findOrFail($id);
         $book->delete();
 
