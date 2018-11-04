@@ -4,7 +4,7 @@
 
     <div class="page-header">
         <h1 class="page-title">
-            Libreria
+            Biblioteca
         </h1>
         <div class="page-subtitle">Abbiamo {{ \Modules\Library\Models\Book::count() }} libri!</div>
         <div class="page-options d-flex">

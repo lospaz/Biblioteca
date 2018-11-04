@@ -5,8 +5,11 @@ namespace Modules\Library\Models;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Michelangelo\ModelActivity\Traits\HasActivity;
 
 class Book extends Model {
+
+    use HasActivity;
 
     protected $fillable = ['category_id', 'title', 'author', 'isbn', 'publishedDate', 'quantity'];
 
