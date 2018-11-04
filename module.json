@@ -1,0 +1,11 @@
+{
+	"name": "Library",
+	"alias": "Library",
+	"description": "Library manager",
+	"authors": {
+		"name": "",
+		"email": ""
+	},
+	"type": "dev",
+	"version": "0.0.1"
+}
