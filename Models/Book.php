@@ -17,6 +17,14 @@ class Book extends Model {
         return $this->belongsTo(Category::class);
     }
 
+    public function loans(){
+        return $this->hasMany(Loan::class);
+    }
+
+    /**
+     * Get book status tag
+     * @return string
+     */
     public function getStatus() {
         switch ($this->available){
             case true:
@@ -26,15 +34,33 @@ class Book extends Model {
         }
     }
 
+    /**
+     * Get photo of book
+     * @return mixed|string
+     */
     public function getPhoto() {
         return ($this->photoUrl == null) ?  "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/No_immagine_disponibile.svg/600px-No_immagine_disponibile.svg.png" : $this->photoUrl;
     }
 
+    /**
+     * Return formatted date to year only
+     * @return mixed|string
+     */
     public function getFormattedDate(){
         try {
             return Carbon::parse($this->publishedDate)->format('Y');
         } catch (Exception $e){
             return $this->publishedDate;
         }
+    }
+
+    /**
+     * Get book availability
+     * @return bool
+     */
+    public function isAvailable() : bool {
+        $quantity = $this->quantity;
+        $loans = $this->loans->where('returned', false)->count();
+        return !($loans >= $quantity);
     }
 }

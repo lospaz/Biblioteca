@@ -17,7 +17,7 @@
                 <tr>
                     <td class="w-1">
                         <div class="avatar d-block" style="background-image: url({{ $book->getPhoto() }})">
-                            <span class="avatar-status @if($book->available) bg-green @else bg-red @endif"></span>
+                            <span class="avatar-status @if($book->isAvailable()) bg-green @else bg-red @endif"></span>
                         </div>
                     </td>
                     <td>{{ $book->title }}</td>

@@ -42,7 +42,7 @@
                             <tr>
                                 <td class="text-center">
                                     <div class="avatar d-block" style="background-image: url({{ $book->getPhoto() }})">
-                                        <span class="avatar-status @if($book->available) bg-green @else bg-red @endif"></span>
+                                        <span class="avatar-status @if($book->isAvailable()) bg-green @else bg-red @endif"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -67,8 +67,7 @@
                                                 <a href="{{ route('login') }}" class="dropdown-item"><i class="dropdown-icon fe fe-log-in"></i> Accedi per prendere in prestito!</a>
                                             @endguest
                                             @auth
-                                                <a href="javascript:void(0)"
-                                                   onclick="alert('Questa funzione non è ancora disponibile.')"
+                                                <a href="{{ route('library.loan.index', $book->id) }}"
                                                    class="dropdown-item"><i class="dropdown-icon fe fe-hash"></i> Prendi in prestito</a>
                                                 @can('library.edit')
                                                     <a href="{{ route('library.edit', ['id' => $book->id]) }}" class="dropdown-item">
