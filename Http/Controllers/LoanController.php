@@ -13,7 +13,7 @@ class LoanController extends Controller {
 
     public function index($id){
         $book = Book::findOrFail($id);
-        if(!$book->isAvailable()){
+        if(!$book->isAvailable() OR $book->alreadyLoanedByUser(Auth::user())){
             flash()->warning('Il libro selezionato non è attualmente disponibile!');
             return redirect(route('library.index'));
         }
@@ -27,8 +27,9 @@ class LoanController extends Controller {
     public function store(Request $request, $id){
         $book = Book::findOrFail($id);
         $user = Auth::user();
+
         //Check if is available
-        if(!$book->isAvailable()){
+        if(!$book->isAvailable() OR $book->alreadyLoanedByUser($user)){
             flash()->warning('Il libro selezionato non è attualmente disponibile!');
             return redirect(route('library.index'));
         }

@@ -5,6 +5,7 @@ namespace Modules\Library\Models;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Michelangelo\ModelActivity\Traits\HasActivity;
 
 class Book extends Model {
@@ -62,5 +63,13 @@ class Book extends Model {
         $quantity = $this->quantity;
         $loans = $this->loans->where('returned', false)->count();
         return !($loans >= $quantity);
+    }
+
+    /**
+     * Check if book is already loaned
+     * @return bool
+     */
+    public function alreadyLoanedByUser($user){
+        return ($user->loans->where('book_id', $this->id)->count() > 0);
     }
 }
