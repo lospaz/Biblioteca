@@ -11,14 +11,20 @@ use Modules\Library\Models\Loan;
 
 class LoanController extends Controller {
 
-    public function index($id){
+    public function index(){
+        return view('Library::loan.index', [
+            'loans' => Auth::user()->loans
+        ]);
+    }
+
+    public function loan($id){
         $book = Book::findOrFail($id);
         if(!$book->isAvailable() OR $book->alreadyLoanedByUser(Auth::user())){
             flash()->warning('Il libro selezionato non è attualmente disponibile!');
             return redirect(route('library.index'));
         }
 
-        return view('Library::loan.index', [
+        return view('Library::loan.loan', [
             'book' => $book,
             'current' => Auth::user()
         ]);
