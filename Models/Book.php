@@ -70,6 +70,9 @@ class Book extends Model {
      * @return bool
      */
     public function alreadyLoanedByUser($user){
-        return ($user->loans->where('book_id', $this->id)->count() > 0);
+        return ($user->loans
+                ->where('book_id', $this->id)
+                ->where('returned', false)
+                ->count() > 0);
     }
 }
