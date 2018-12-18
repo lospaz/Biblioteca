@@ -25,4 +25,10 @@ class Loan extends Model {
     public function loanExpired(){
          return ($this->date->addMonths(3)->lte(Carbon::now()));
     }
+
+    public function getFullName($showExtBadge = false){
+        return ($this->user !== null)
+            ? "{$this->user->name} {$this->user->surname}"
+            : ((($showExtBadge) ? "<span class='tag tag-secondary'><i class='fe fe-user-x'></i></span> " : "") . "{$this->name}");
+    }
 }
