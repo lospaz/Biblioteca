@@ -4,7 +4,7 @@
 
     <div class="page-header">
         <h1 class="page-title">
-            Prestito
+            Prestito per altra persona
         </h1>
     </div>
 
@@ -24,7 +24,7 @@
         </div>
 
         <div class="col-md-8">
-            <form class="card" method="POST" action="{{ route('library.loan.store', $book->id) }}">
+            <form class="card" method="POST" action="{{ route('library.loan.store.ext', $book->id) }}">
                 @csrf
                 <div class="card-body">
                     <h3 class="card-title">Compila dati</h3>
@@ -32,33 +32,19 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Nome</label>
-                                <input type="text" class="form-control"
-                                       disabled=""
-                                       value="{{ $current->name }}">
+                                <input type="text" class="form-control" name="name">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Cognome</label>
-                                <input type="text" class="form-control" disabled="" value="{{ $current->surname }}">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="text" class="form-control" disabled="" value="{{ $current->email }}">
+                                <input type="text" class="form-control" name="surname">
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Telefono</label>
-
-                            @if($current->telephone == null)
-                                 <input type="text" class="form-control is-invalid" name="telephone">
-                                 <div class="invalid-feedback">Nessun numero di telefono collegato al tuo account, specificane uno</div>
-                            @else
-                                 <input type="text" class="form-control" disabled="" value="{{ $current->telephone }}">
-                            @endif
+                                <input type="text" class="form-control" name="telephone">
                             </div>
                         </div>
                     </div>

@@ -62,4 +62,49 @@ class LoanController extends Controller {
         return redirect(route('library.index'));
     }
 
+    /*
+     * External
+     */
+
+    public function extLoan($id){
+        $book = Book::findOrFail($id);
+        if(!$book->isAvailable()){
+            flash()->warning('Il libro selezionato non è attualmente disponibile!');
+            return redirect(route('library.index'));
+        }
+
+        return view('Library::loan.ext', [
+            'book' => $book,
+            'current' => Auth::user()
+        ]);
+    }
+
+    public function extStore(Request $request, $id){
+        $book = Book::findOrFail($id);
+
+        //Check if is available
+        if(!$book->isAvailable()){
+            flash()->warning('Il libro selezionato non è attualmente disponibile!');
+            return redirect(route('library.index'));
+        }
+        //Check if telephone is missing
+        if(!$request->has('telephone') OR $request->telephone == null){
+            flash()->warning('Nessun numero di telefono collegato al tuo account, specificane uno');
+            return redirect(route('library.loan.index.ext', $book->id));
+        }
+
+        $loan = new Loan;
+        $loan->book_id = $book->id;
+        $loan->name = "{$request->name} {$request->surname}";
+        $loan->telephone = $request->telephone;
+        $loan->date = Carbon::today();
+        $loan->save();
+
+        if($loan)
+            flash()->success("Prestito aggiunto con successo!
+            La restituzione deve avvenire entro il <b>{$loan->date->addMonths(3)->format('d/m/Y')}</b>");
+        else
+            flash()->warning('Si è verificato un errore durante l\'aggiunta del prestito.');
+        return redirect(route('library.index'));
+    }
 }

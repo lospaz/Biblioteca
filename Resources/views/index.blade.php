@@ -69,6 +69,10 @@
                                             @auth
                                                 <a href="{{ route('library.loan.index', $book->id) }}"
                                                    class="dropdown-item"><i class="dropdown-icon fe fe-hash"></i> Prendi in prestito</a>
+                                                @hasrole('admin')
+                                                    <a href="{{ route('library.loan.index.ext', $book->id) }}"
+                                                       class="dropdown-item"><i class="dropdown-icon fe fe-user-x"></i> Prestito per persona esterna</a>
+                                                @endhasrole
                                                 @can('library.edit')
                                                     <a href="{{ route('library.edit', ['id' => $book->id]) }}" class="dropdown-item">
                                                         <i class="dropdown-icon fe fe-edit"></i> Modifica
