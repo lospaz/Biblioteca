@@ -26,7 +26,7 @@ class CreateBook extends FormRequest
     {
         return [
             'isbn' => 'required|unique:books',
-            'category_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'title' => 'required|max:255',
             'author' => 'required|max:255',
             'publishedDate' => 'required'

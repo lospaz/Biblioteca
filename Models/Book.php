@@ -14,12 +14,21 @@ class Book extends Model {
 
     protected $fillable = ['category_id', 'title', 'author', 'isbn', 'publishedDate', 'quantity'];
 
+    protected $hidden = ['user_id', 'quantity'];
+
     public function category(){
         return $this->belongsTo(Category::class);
     }
 
     public function loans(){
         return $this->hasMany(Loan::class);
+    }
+
+    protected static function boot(){
+        parent::boot();
+        static::creating(function ($model){
+            $model->user_id = Auth::id();
+        });
     }
 
     /**

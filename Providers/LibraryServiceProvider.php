@@ -51,7 +51,7 @@ class LibraryServiceProvider extends ServiceProvider
     }
     public function registerApiRoutes()
     {
-      Route::prefix('api')->middleware('api')->namespace('Modules\Library\Http\Controllers')
+      Route::prefix('v1')->middleware('api')->namespace('Modules\Library\Http\Controllers')
             ->group(__DIR__  . '/../Routes/api.php');
     }
     public function registerFactories()

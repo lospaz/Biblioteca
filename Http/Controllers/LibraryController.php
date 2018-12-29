@@ -61,7 +61,6 @@ class LibraryController extends Controller
         }
 
         $book = new Book;
-        $book->user_id = Auth::id();
         $book->fill($request->except('_token'));
 
         $category = self::checkCategory($request);
