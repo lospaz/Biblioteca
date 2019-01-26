@@ -1,10 +1,18 @@
 @extends('layouts.app')
 
+@push('css')
+<style>
+    .text-divider{margin: 2em 0; line-height: 0; text-align: center;}
+    .text-divider span{background-color: #ffffff; padding: 1em;}
+    .text-divider:before{ content: " "; display: block; border-top: 1px solid #e3e3e3; border-bottom: 1px solid #f7f7f7;}
+</style>
+@endpush
+
 @section('content')
 
     <div class="page-header">
         <h1 class="page-title">
-            Prestito
+            Nuovo prestito
         </h1>
     </div>
 
@@ -31,34 +39,31 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Nome</label>
+                                <label class="form-label">Seleziona utente esistente</label>
                                 <input type="text" class="form-control"
-                                       disabled=""
-                                       value="{{ $current->name }}">
+                                       name="user_id"
+                                       id="selectUser">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-divider"><span>o inserisci dati manualmente</span></p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Nome</label>
+                                <input type="text" class="form-control" name="name">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Cognome</label>
-                                <input type="text" class="form-control" disabled="" value="{{ $current->surname }}">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="text" class="form-control" disabled="" value="{{ $current->email }}">
+                                <input type="text" class="form-control" name="surname">
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Telefono</label>
-
-                            @if($current->telephone == null)
-                                 <input type="text" class="form-control is-invalid" name="telephone">
-                                 <div class="invalid-feedback">Nessun numero di telefono collegato al tuo account, specificane uno</div>
-                            @else
-                                 <input type="text" class="form-control" disabled="" value="{{ $current->telephone }}">
-                            @endif
+                                <input type="text" class="form-control" name="telephone">
                             </div>
                         </div>
                     </div>
@@ -70,3 +75,47 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/selectize.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#selectUser').selectize({
+                create: false,
+                placeholder: 'cerca utente...',
+                valueField: 'id',
+                searchField: ['name', 'surname', 'email'],
+                maxItems: 1,
+                render: {
+                    option: function(item, escape) {
+                        return '<div>' +
+                            '<span class="title">' +
+                            '<span class="name">' + escape(item.name) + ' ' + escape(item.surname) + '</span><br />' +
+                            '</span>' +
+                            '<span class="description">' + escape(item.email) + '</span>' +
+                            '</div>';
+                    },
+                    item: function(item, escape){
+                        return '<div>'
+                            + escape(item.name) + ' '
+                            + escape(item.surname)
+                            + '</div>';
+                    }
+                },
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+                    $.ajax({
+                        url: '{{ route('library.loan.search') }}?q=' + encodeURIComponent(query),
+                        type: 'GET',
+                        error: function() {
+                            callback();
+                        },
+                        success: function(res) {
+                            callback(res.users);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+@endpush

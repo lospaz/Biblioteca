@@ -29,6 +29,22 @@ class BookController extends Controller {
     }
 
     /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id){
+        $book = Book::query()
+            ->with('category')
+            ->where('id', $id)
+            ->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'book' => $book
+        ]);
+    }
+
+    /**
      * @param CreateBook $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -38,7 +54,44 @@ class BookController extends Controller {
         $book->save();
 
         return response()->json([
-            'success' => ((bool) $book)
+            'success' => ((bool) $book),
+            'book' => $book
+        ]);
+    }
+
+    /**
+     * @param CreateBook $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(CreateBook $request, $id){
+        $book = Book::findOrFail($id);
+        $book->fill($request->all());
+        $book->save();
+
+        return response()->json([
+            'success' => ((bool) $book),
+            'book' => $book
+        ]);
+    }
+
+    /**
+     * @param CreateBook $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete($id){
+        $book = Book::findOrFail($id);
+
+        if($book->loans()->count() > 0)
+            return response()->json([
+                'success' => false,
+            ]);
+
+        $book->delete();
+
+        return response()->json([
+            'success' => true,
         ]);
     }
 

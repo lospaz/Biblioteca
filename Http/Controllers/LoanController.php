@@ -3,9 +3,11 @@
 namespace Modules\Library\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Modules\Library\Http\Requests\CreateLoan;
 use Modules\Library\Models\Book;
 use Modules\Library\Models\Loan;
 
@@ -30,28 +32,31 @@ class LoanController extends Controller {
         ]);
     }
 
-    public function store(Request $request, $id){
+    public function store(CreateLoan $request, $id){
         $book = Book::findOrFail($id);
-        $user = Auth::user();
 
         //Check if is available
-        if(!$book->isAvailable() OR $book->alreadyLoanedByUser($user)){
+        if(!$book->isAvailable()){
             flash()->warning('Il libro selezionato non è attualmente disponibile!');
             return redirect(route('library.index'));
         }
-        //Check if telephone is missing
-        if($user->telephone == null && (!$request->has('telephone') OR $request->telephone == null)){
-            flash()->warning('Nessun numero di telefono collegato al tuo account, specificane uno');
-            return redirect(route('library.loan.index', $book->id));
+
+        $loan = new Loan;
+        $loan->book_id = $book->id;
+        $loan->date = Carbon::today();
+
+        if($request->has('user_id') && $request->user_id != null){
+            $user = User::find($request->user_id);
+            if(!$user){
+                flash()->warning('L\'utente selezionato non è stato trovato.');
+                return redirect(route('library.loan.index', $book->id));
+            }
+            $loan->user_id = $user->id;
         } else {
-            $user->telephone = $request->telephone;
-            $user->save();
+            $loan->name = "{$request->name} {$request->surname}";
+            $loan->telephone = $request->telephone;
         }
 
-        $loan = new Loan;
-        $loan->book_id = $book->id;
-        $loan->user_id = $user->id;
-        $loan->date = Carbon::today();
         $loan->save();
 
         if($loan)
@@ -62,49 +67,21 @@ class LoanController extends Controller {
         return redirect(route('library.index'));
     }
 
-    /*
-     * External
-     */
+    public function search(Request $request){
+        $search = $request->q;
+        $users = User::where(function ($q) use ($search){
+            $q->where('name', 'like', "%$search%")
+                ->orWhere('surname', 'like', "%$search%")
+                ->orWhere('email', 'like', "%$search%")
+                ->orWhere('telephone', 'like', "%$search%");
+        })
+            ->select('id', 'name', 'surname', 'email')
+            ->get();
 
-    public function extLoan($id){
-        $book = Book::findOrFail($id);
-        if(!$book->isAvailable()){
-            flash()->warning('Il libro selezionato non è attualmente disponibile!');
-            return redirect(route('library.index'));
-        }
-
-        return view('Library::loan.ext', [
-            'book' => $book,
-            'current' => Auth::user()
-        ]);
-    }
-
-    public function extStore(Request $request, $id){
-        $book = Book::findOrFail($id);
-
-        //Check if is available
-        if(!$book->isAvailable()){
-            flash()->warning('Il libro selezionato non è attualmente disponibile!');
-            return redirect(route('library.index'));
-        }
-        //Check if telephone is missing
-        if(!$request->has('telephone') OR $request->telephone == null){
-            flash()->warning('Nessun numero di telefono collegato al tuo account, specificane uno');
-            return redirect(route('library.loan.index.ext', $book->id));
-        }
-
-        $loan = new Loan;
-        $loan->book_id = $book->id;
-        $loan->name = "{$request->name} {$request->surname}";
-        $loan->telephone = $request->telephone;
-        $loan->date = Carbon::today();
-        $loan->save();
-
-        if($loan)
-            flash()->success("Prestito aggiunto con successo!
-            La restituzione deve avvenire entro il <b>{$loan->date->addMonths(3)->format('d/m/Y')}</b>");
-        else
-            flash()->warning('Si è verificato un errore durante l\'aggiunta del prestito.');
-        return redirect(route('library.index'));
+        return response()->json([
+                'success' => true,
+                'users' => $users
+            ]
+        );
     }
 }
