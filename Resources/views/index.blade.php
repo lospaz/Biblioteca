@@ -105,4 +105,13 @@
         </div>
     </div>
 
+    <div class="row row-cards row-deck">
+        <div class="col-12">
+            <div class="alert alert-icon alert-primary" role="alert">
+                <i class="fa fa-info-circle mr-2" aria-hidden="true"></i>
+                <a href="https://open.lospaz.org/library-open-api" class="text-decoration-none" style="color: #24426c;">È disponibile la documentazione sulle API della biblioteca.</a>
+            </div>
+        </div>
+    </div>
+
 @endsection
